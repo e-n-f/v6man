@@ -1,0 +1,15 @@
+#!/bin/sh
+
+#  strip out just enough of the document-structuring comments
+#  that ghostview will be able flip around in postscript files
+#  that have been catted together
+
+cat ${1+"$@"} | 
+egrep -v '%%Pages:|%%EOF' |
+awk '{ 
+	if (/^%%Page:/) {
+		i++;
+		print "%%Page:", i, i;
+	} else
+		print;
+}'

@@ -1,0 +1,26 @@
+#!/bin/sh
+
+# .li used to mean that the next line wasn't to be interpreted
+# specially.  \& took over that role in v7.
+
+awk 'BEGIN {
+	prefix = "";
+}
+{
+	if (/^\.li *$/) {
+		prefix = "\\&";
+	} else {
+		print prefix $0;
+		prefix = "";
+	}
+}' ${1+"$@"} |
+
+# yes, "as" includes literal TTY 37 control codes to do half-line
+# motions!
+
+sed "s/8/\\\\v'-0.5m'/
+     s/9/\\\\v'+0.5m'/" |
+
+# "ed" uses a single dot followed by whitespace as a comment
+
+sed 's/^\.		/.\\"/'
